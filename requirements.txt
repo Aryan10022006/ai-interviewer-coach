@@ -11,3 +11,51 @@ pillow
 google-generativeai
 PyPDF2
 pdfplumber
+pydub
+# ============================================================================
+# MULTIMODAL INTERVIEW - Additional Dependencies
+# ============================================================================
+# Add these to your existing requirements.txt
+
+# WebRTC for real-time audio/video streaming
+streamlit-webrtc
+
+# Audio/Video processing
+av
+pydub
+
+# Speech Recognition (STT)
+SpeechRecognition
+pyaudio  # Required for microphone input (optional)
+
+# Text-to-Speech (TTS)
+gTTS  # Free Google TTS
+elevenlabs  # Premium TTS (optional)
+
+# OpenAI for Whisper STT and TTS (optional - requires API key)
+# openai  # Already in main requirements
+
+# Audio format conversion
+scipy
+soundfile
+
+# Additional utilities
+python-dotenv  # Already in main requirements
+pillow  # Already in main requirements
+numpy  # Already in main requirements
+
+# ============================================================================
+# INSTALLATION NOTES
+# ============================================================================
+#
+# WINDOWS:
+# pip install streamlit-webrtc av pydub gTTS SpeechRecognition scipy soundfile
+#
+# LINUX/MAC:
+# pip install streamlit-webrtc av pydub gTTS SpeechRecognition scipy soundfile
+# sudo apt-get install portaudio19-dev  # For pyaudio
+#
+# OPTIONAL (Premium):
+# pip install elevenlabs  # For high-quality TTS
+#
+# ============================================================================
