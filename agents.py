@@ -27,12 +27,21 @@ except ImportError:
     print("⚠️ tavily-python not installed. Install for web search: pip install tavily-python")
 
 # Initialize LLMs (FREE APIS)
-# Load API keys from environment
+# Load API keys from Streamlit secrets (Cloud) or .env (Local)
+import streamlit as st
 from dotenv import load_dotenv
-load_dotenv()  # Make sure .env is loaded
 
-google_api_key = os.getenv("GOOGLE_API_KEY")
-groq_api_key = os.getenv("GROQ_API_KEY")
+# Try Streamlit secrets first (for Cloud deployment), then .env (for local)
+try:
+    google_api_key = st.secrets["GOOGLE_API_KEY"]
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+    print("🔐 Using Streamlit Cloud secrets")
+except (FileNotFoundError, KeyError):
+    # Fallback to .env for local development
+    load_dotenv()
+    google_api_key = os.getenv("GOOGLE_API_KEY")
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    print("🔐 Using local .env file")
 
 print(f"🔑 Google API Key: {'✅ Found' if google_api_key and google_api_key != 'your_google_api_key_here' else '❌ Missing'}")
 print(f"🔑 Groq API Key: {'✅ Found' if groq_api_key and groq_api_key != 'your_groq_api_key_here' else '❌ Missing'}")
@@ -52,7 +61,7 @@ if GEMINI_AVAILABLE and google_api_key and google_api_key != "your_google_api_ke
 else:
     gemini_flash_model = None
     gemini_pro_model = None
-    print("⚠️ Gemini not configured. Set GOOGLE_API_KEY in .env")
+    print("⚠️ Gemini not configured. Set GOOGLE_API_KEY in .env or Streamlit secrets")
 
 # Groq: Super fast (for live interviewer)
 groq_llm = None
@@ -93,7 +102,7 @@ class GeminiWrapper:
 
 # Map agents to optimal models
 if not gemini_flash_model and not groq_llm:
-    raise RuntimeError("❌ No LLM configured! Please set GOOGLE_API_KEY in .env file")
+    raise RuntimeError("❌ No LLM configured! Please set GOOGLE_API_KEY in .env file (local) or Streamlit secrets (cloud)")
 
 llm = groq_llm if groq_llm else GeminiWrapper(gemini_flash_model, 0.7)
 strict_llm = GeminiWrapper(gemini_pro_model, 0.3) if gemini_pro_model else GeminiWrapper(gemini_flash_model, 0.3)
@@ -181,7 +190,12 @@ class ResearcherAgent:
     """
     
     def __init__(self):
-        tavily_key = os.getenv("TAVILY_API_KEY")
+        # Try Streamlit secrets first, then .env
+        try:
+            tavily_key = st.secrets.get("TAVILY_API_KEY")
+        except (FileNotFoundError, KeyError, AttributeError):
+            tavily_key = os.getenv("TAVILY_API_KEY")
+        
         if TAVILY_AVAILABLE and tavily_key and tavily_key != "your_tavily_api_key_here":
             self.tavily_client = TavilyClient(api_key=tavily_key)
         else:
