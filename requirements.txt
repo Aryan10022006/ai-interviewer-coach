@@ -26,7 +26,6 @@ pydub
 
 # Speech Recognition (STT)
 SpeechRecognition
-pyaudio  # Required for microphone input (optional)
 
 # Text-to-Speech (TTS)
 gTTS  # Free Google TTS
